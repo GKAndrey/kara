@@ -68,6 +68,12 @@ local function sorted_scan_dates(inst)
     return result
 end
 
+local function publish_scan_dates(inst)
+    if inst._kara_album_dates_net ~= nil then
+        inst._kara_album_dates_net:set(table.concat(sorted_scan_dates(inst), ","))
+    end
+end
+
 -- Добавляет успешно зарисованное существо в альбом Кары.
 local function OnKaraSketchComplete(inst, data)
     if data == nil or data.target == nil then
@@ -118,11 +124,6 @@ local function OnKaraSketchComplete(inst, data)
     publish_scan_dates(inst)
 end
 
-local function publish_scan_dates(inst)
-    if inst._kara_album_dates_net ~= nil then
-        inst._kara_album_dates_net:set(table.concat(sorted_scan_dates(inst), ","))
-    end
-end
 
 local function encode_album_notes(notes)
     local entries = {}
@@ -436,6 +437,9 @@ local master_postinit = function(inst)
     inst.OnLoad = onload
     inst.OnNewSpawn = onload
 end
+
+
+local rad = 15 -- радиус проверки на наличие других игроков и животных
 
 local function sanityfn(inst)
     local nearby_count = {0, 0} -- [1] = игроки, [2] = животные
