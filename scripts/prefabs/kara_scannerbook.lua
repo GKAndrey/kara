@@ -198,15 +198,17 @@ local function OnEquip(inst, owner)
 
     StopScanning(inst)
     RemoveScanRing(inst)
-    if owner ~= nil and owner:IsValid() and owner:HasTag("kara") then
-        inst._kara_scan_ring = SpawnPrefab("kara_scanner_ring_fx")
-        if inst._kara_scan_ring ~= nil and inst._kara_scan_ring.TrackOwner ~= nil then
-            inst._kara_scan_ring:TrackOwner(owner, inst)
-        end
-        -- Не запускайте сканирование сразу при экипировке. Первое настоящее сканирование происходит после
-        -- полного интервала сканирования, поэтому одна лишь экипировка не запускает анимацию зарисовки.
-        inst._kara_scan_task = inst:DoPeriodicTask(SCAN_PERIOD, ScanArea, SCAN_PERIOD, owner)
-    end
+    -- if owner ~= nil and owner:IsValid() and owner:HasTag("kara") then
+    --     inst._kara_scan_ring = SpawnPrefab("kara_scanner_ring_fx")
+    --     if inst._kara_scan_ring ~= nil and inst._kara_scan_ring.TrackOwner ~= nil then
+    --         inst._kara_scan_ring:TrackOwner(owner, inst)
+    --     end
+    --     -- Не запускайте сканирование сразу при экипировке. Первое настоящее сканирование происходит после
+    --     -- полного интервала сканирования, поэтому одна лишь экипировка не запускает анимацию зарисовки.
+    --     -- inst._kara_scan_task = inst:DoPeriodicTask(SCAN_PERIOD, ScanArea, SCAN_PERIOD, owner)
+    --         return nil
+    -- end
+    CancelScanAnimation(inst)
 end
 
 local function OnUnequip(inst, owner)
@@ -235,6 +237,8 @@ local function fn()
     inst:AddTag("book")
     inst:AddTag("bookcabinet_item")
     inst:AddTag("kara_scannerbook")
+    -- Маркер необходим для отображения действия SKETCH на существе.
+    -- inst:AddComponent("karasketchtool") 
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
