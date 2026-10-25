@@ -196,8 +196,8 @@ local function OnEquip(inst, owner)
         end
     end
 
-    StopScanning(inst)
-    RemoveScanRing(inst)
+    -- StopScanning(inst)
+    -- RemoveScanRing(inst)
     -- if owner ~= nil and owner:IsValid() and owner:HasTag("kara") then
     --     inst._kara_scan_ring = SpawnPrefab("kara_scanner_ring_fx")
     --     if inst._kara_scan_ring ~= nil and inst._kara_scan_ring.TrackOwner ~= nil then
@@ -208,7 +208,7 @@ local function OnEquip(inst, owner)
     --     -- inst._kara_scan_task = inst:DoPeriodicTask(SCAN_PERIOD, ScanArea, SCAN_PERIOD, owner)
     --         return nil
     -- end
-    CancelScanAnimation(inst)
+    -- CancelScanAnimation(inst)
 end
 
 local function OnUnequip(inst, owner)
@@ -237,14 +237,16 @@ local function fn()
     inst:AddTag("book")
     inst:AddTag("bookcabinet_item")
     inst:AddTag("kara_scannerbook")
-    -- Маркер необходим для отображения действия SKETCH на существе.
-    -- inst:AddComponent("karasketchtool") 
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
     end
 
+    -- Маркер необходим для отображения действия SKETCH на существе.
+    inst:AddComponent("karasketchtool") 
+
+    
     inst:AddComponent("inspectable")
     inst.components.inspectable:SetDescription("Sketches nearby creatures while held and saves discoveries in the album.")
 

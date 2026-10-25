@@ -68,6 +68,56 @@ local function sorted_scan_dates(inst)
     return result
 end
 
+-- Добавляет успешно зарисованное существо в альбом Кары.
+local function OnKaraSketchComplete(inst, data)
+    if data == nil or data.target == nil then
+        return
+    end
+
+    local target = data.target
+
+    if not target:IsValid()
+        or target == inst
+        or target.prefab == nil
+        or target:HasAnyTag(
+            "player",
+            "playerghost",
+            "INLIMBO",
+            "NOCLICK",
+            "FX",
+            "DECOR"
+        ) then
+        return
+    end
+
+    if target.components.health ~= nil
+        and target.components.health:IsDead() then
+        return
+    end
+
+    inst.kara_scanned_creatures = inst.kara_scanned_creatures or {}
+    inst.kara_scan_dates = inst.kara_scan_dates or {}
+
+    -- Если существо уже занесено в альбом, повторно его не записываем.
+    if inst.kara_scanned_creatures[target.prefab] then
+        return
+    end
+
+    inst.kara_scanned_creatures[target.prefab] = true
+
+    local cycles = TheWorld ~= nil
+        and TheWorld.state ~= nil
+        and TheWorld.state.cycles
+        or 0
+
+    inst.kara_scan_dates[target.prefab] =
+        math.max(1, math.floor(tonumber(cycles) or 0) + 1)
+
+    -- Обновляем сетевые данные, чтобы альбом увидел новую запись.
+    publish_album(inst)
+    publish_scan_dates(inst)
+end
+
 local function publish_scan_dates(inst)
     if inst._kara_album_dates_net ~= nil then
         inst._kara_album_dates_net:set(table.concat(sorted_scan_dates(inst), ","))
@@ -344,6 +394,9 @@ local master_postinit = function(inst)
     publish_album(inst)
     publish_scan_dates(inst)
     publish_album_notes(inst)
+
+    -- Записываем результат ручной зарисовки в альбом.
+    inst:ListenForEvent("karasketch_complete", OnKaraSketchComplete)
 
     inst:AddComponent("kara_tail_slot")
     inst.components.kara_tail_slot:Initialize()

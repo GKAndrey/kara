@@ -195,6 +195,27 @@ AddModRPCHandler("Kara", "SaveAlbumNote", function(player, prefab, note)
 end)
 
 
+-- Таблица кого рисуем и что получаем
+-- имена рецептов (как в AddRecipe/AddRecipe2), которые откроются
+local KARA_SKETCH_RECIPES = {
+    spider    = { "trap" },        -- паук     -> ловушка
+    bee       = { "beebox" },      -- пчела    -> улей
+    pigman    = { "footballhat" }, -- свинья   -> футбольный шлем
+    hound     = { "armorwood" },   -- гончая   -> деревянная броня
+    butterfly = { "papyrus" },     -- бабочка  -> папирус
+}
+GLOBAL.KARA_SKETCH_RECIPES = KARA_SKETCH_RECIPES
+
+-- Экшен "Зарисовать"
+local SketchAction = AddAction("SKETCH", "Зарисовать", function(act)
+    local doer, target = act.doer, act.target
+    if doer ~= nil and target ~= nil and doer.components.karasketcher ~= nil then
+        return doer.components.karasketcher:Start(target)
+    end
+    return false
+end)
+SketchAction.distance = 3
+
 
 
 -- =========================================================
